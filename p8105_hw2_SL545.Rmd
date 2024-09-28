@@ -9,8 +9,16 @@ library(tidyverse)
 library(ggridges)
 ```
 
+## Problem 1
+
 ```{r}
 transit_df =
-  read_csv("data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
+  read_csv("data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv", 
+           na = c("NA", "", ".")) |>
+  janitor::clean_names()|>
+  select(line:route11, entry, vending, entrance_type, ada)|>
+  mutate(entry = ifelse(entry == "YES", 1, 0))
 ```
+
+
 
