@@ -20,5 +20,26 @@ transit_df =
   mutate(entry = ifelse(entry == "YES", 1, 0))
 ```
 
+This dataset contains division, the name of subway lines, station names on each line, routes served at each station, station's longitude and latitude, station's orientation, whether the station has entry and vending, each station's entrance type, entrance's longitude and latitude, and ADA compliance. 
+I clear the names of variables in the dataset, and selected the variables we need. I have changed variable "entry" from character to a numeric varible, result in 1868 rows and 32 colomns in the dataset. However, these data are still not tidy enough.
+
+```{r}
+stations = transit_df |>
+  distinct(line, station_name)
+n_stations = nrow(stations)
+
+ada_stations = transit_df|>
+  filter(ada == "TRUE") |>
+  distinct(line, station_name)
+n_ada = nrow(ada_stations)
+
+no_vending = transit_df|>
+  filter(vending == "NO")
+prop_no_vending = nrow(transit_df) / nrow(no_vending)
+
+```
+There are 465 distinct stations.
+84 stations are ADA compliant.
+About 10.21% of station entrances/exits don't have vending allow entrance.
 
 
