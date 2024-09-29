@@ -44,8 +44,9 @@ About 10.21% of station entrances/exits don't have vending allow entrance.
 
 ```{r}
 route_df = transit_df |>
+  mutate(across(route1:route11, as.character))|>
   pivot_longer(
-    cols = route1:11,
+    cols = route1:route11,
     names_to = "route_number",
     values_to = "route_name"
   )
@@ -55,8 +56,8 @@ a_stations = route_df|>
   distinct(line, station_name)
 
 ada_a_stations = route_df |>
-  filter(ada == "TRUE") |>
+  filter(route_name == "A", ada == "TRUE") |>
   distinct(line, station_name)
-
 ```
-
+There are 60 distinct stations serve the A train.
+17 of the stations that serve the A trains are ADA compliant.
