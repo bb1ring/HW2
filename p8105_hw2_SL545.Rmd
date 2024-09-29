@@ -61,3 +61,5 @@ ada_a_stations = route_df |>
 ```
 There are 60 distinct stations serve the A train.
 17 of the stations that serve the A trains are ADA compliant.
+
+## Problem 2
