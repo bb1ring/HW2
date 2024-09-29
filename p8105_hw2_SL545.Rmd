@@ -42,4 +42,21 @@ There are 465 distinct stations.
 84 stations are ADA compliant.
 About 10.21% of station entrances/exits don't have vending allow entrance.
 
+```{r}
+route_df = transit_df |>
+  pivot_longer(
+    cols = route1:11,
+    names_to = "route_number",
+    values_to = "route_name"
+  )
+  
+a_stations = route_df|>
+  filter(route_name == "A") |>
+  distinct(line, station_name)
+
+ada_a_stations = route_df |>
+  filter(ada == "TRUE") |>
+  distinct(line, station_name)
+
+```
 
