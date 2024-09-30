@@ -6,6 +6,7 @@ date: "2024-09-28"
 
 ```{r setup, include=FALSE}
 library(tidyverse)
+library(readxl)
 library(ggridges)
 ```
 
@@ -63,3 +64,34 @@ There are 60 distinct stations serve the A train.
 17 of the stations that serve the A trains are ADA compliant.
 
 ## Problem 2
+
+```{r}
+mr_trash = 
+  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel",
+             range = "A2:N653", na = c("NA", "", ".")) |>
+  janitor::clean_names() |>
+  mutate(sports_balls = as.integer(round(sports_balls, 0)),
+         trash_wheel_name = "Mr.Trash Wheel",
+         year = as.character(year))
+
+prof_trash = 
+  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel",
+             range = "A2:M120", na = c("NA", "", ".")) |>
+  janitor::clean_names() |>
+  mutate(trash_wheel_name = "Professor Trash Wheel",
+         year = as.character(year))
+
+gwynnda = 
+  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel",
+             range = "A2:L265", na = c("NA", "", ".")) |>
+  janitor::clean_names() |>
+  mutate(trash_wheel_name = "Gwynnda",
+         year = as.character(year))
+```
+
+```{r}
+combined_data = 
+  bind_rows(mr_trash, prof_trash, gwynnda)|>
+  arrange(dumpster, year)
+```
+
