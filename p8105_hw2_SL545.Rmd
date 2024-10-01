@@ -17,7 +17,9 @@ transit_df =
   read_csv("data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv", 
            na = c("NA", "", ".")) |>
   janitor::clean_names()|>
-  select(line:route11, entry, vending, entrance_type, ada)|>
+  select(line, station_name, station_latitude, station_longitude, 
+    starts_with("route"), entry, exit_only, vending, entrance_type, 
+    ada)|>
   mutate(entry = ifelse(entry == "YES", 1, 0))
 ```
 
@@ -26,7 +28,8 @@ I clear the names of variables in the dataset, and selected the variables we nee
 
 ```{r}
 stations = transit_df |>
-  distinct(line, station_name)
+  select(station_name, line) |>
+  distinct()
 n_stations = nrow(stations)
 
 ada_stations = transit_df|>
@@ -35,13 +38,14 @@ ada_stations = transit_df|>
 n_ada = nrow(ada_stations)
 
 no_vending = transit_df|>
-  filter(vending == "NO")
-prop_no_vending = nrow(transit_df) / nrow(no_vending)
+  filter(vending == "NO") |>
+  pull(entry) |>
+  mean()
 
 ```
 There are 465 distinct stations.
 84 stations are ADA compliant.
-About 10.21% of station entrances/exits don't have vending allow entrance.
+About 37.7% of station entrances/exits don't have vending allow entrance.
 
 ```{r}
 route_df = transit_df |>
@@ -67,7 +71,7 @@ There are 60 distinct stations serve the A train.
 
 ```{r}
 mr_trash = 
-  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel",
+  read_excel("data/202409 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel",
              range = "A2:N653", na = c("NA", "", ".")) |>
   janitor::clean_names() |>
   mutate(sports_balls = as.integer(round(sports_balls, 0)),
@@ -75,14 +79,14 @@ mr_trash =
          year = as.character(year)) 
 
 prof_trash = 
-  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel",
+  read_excel("data/202409 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel",
              range = "A2:M120", na = c("NA", "", ".")) |>
   janitor::clean_names() |>
   mutate(trash_wheel_name = "Professor Trash Wheel",
          year = as.character(year))
 
 gwynnda = 
-  read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel",
+  read_excel("data/202409 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel",
              range = "A2:L265", na = c("NA", "", ".")) |>
   janitor::clean_names() |>
   mutate(trash_wheel_name = "Gwynnda",
@@ -132,7 +136,8 @@ bakers_df =
   janitor::clean_names()|>
   relocate(series)|>
   arrange(series)|>
-  mutate(baker = word(baker_name, 1))
+  mutate(baker = word(baker_name, 1))|>
+  select(-baker_name)
 
 bakes_df =
   read_csv("data/gbb_datasets/bakes.csv", 
@@ -159,8 +164,9 @@ viewers_df =
 ```
 
 ```{r}
-all_info = bakers_df |>
-  left_join(bakes_df, by = c("series", "baker_name")) |>
+all_info = 
+  left_join(bakers_df, bakes_df, by = c("baker")) 
+
   left_join(results_df, by = "series") |>
   left_join(viewers_df, by = "series")
 
