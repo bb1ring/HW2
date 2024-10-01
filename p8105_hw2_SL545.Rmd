@@ -136,19 +136,21 @@ bakers_df =
   janitor::clean_names()|>
   relocate(series)|>
   arrange(series)|>
-  mutate(baker = word(baker_name, 1))|>
-  select(-baker_name)
+  mutate(baker = word(baker_name, 1),
+         series = as.character(series))
 
 bakes_df =
   read_csv("data/gbb_datasets/bakes.csv", 
            na = c("NA", "", ".")) |>
-  janitor::clean_names()
+  janitor::clean_names() |>
+  mutate(series = as.character(series))
 
 results_df =
   read_csv("data/gbb_datasets/results.csv",
            skip = 2,
            na = c("NA", "", ".")) |>
-  janitor::clean_names()
+  janitor::clean_names()|>
+  mutate(series = as.character(series))
 
 viewers_df =
   read_csv("data/gbb_datasets/viewers.csv", 
@@ -159,16 +161,35 @@ viewers_df =
     names_to = "series",
     values_to = "viewers"
   )|>
+  mutate(series = str_remove(series, "series_"))|>
   relocate(series)|>
   arrange(series)
 ```
 
 ```{r}
-all_info = 
-  left_join(bakers_df, bakes_df, by = c("baker")) 
+all_info = bakers_df|>
+  left_join(bakes_df, by = c("baker", "series"), relationship = "many-to-many") |>
+  left_join(viewers_df, by = c("series", "episode"), relationship = "many-to-many") |>
+  left_join(results_df, by = c("baker", "series", "episode"), relationship = "many-to-many")
+```
 
-  left_join(results_df, by = "series") |>
-  left_join(viewers_df, by = "series")
+```{r}
+final_data = all_info|>
+  select(-baker) |>
+  relocate(series, episode, baker_name)
+
+write_csv(final_data, "HW2/final_dataset.csv")
 
 ```
+```{r}
+star_bakers <- final_data %>%
+  filter(Season >= 5 & Season <= 10) %>%
+  group_by(Episode, Season) %>%
+  summarise(StarBaker = first(BakerName[Result == "Star Baker"]))
+
+# Display the table
+print(star_bakers)
+
+```
+
 
