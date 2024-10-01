@@ -124,8 +124,8 @@ gwynnda_cig = gwynnda |>
   pull(cigarette_butts) |>
   sum()
 ```
-The combined dataset has 'r n_obs' observations. Key variables include dumpter number, date of collection, amount of total litter and litter type. Mr.Trash wheel started collected trash in 2014. Professor Trash wheel started in 2017. Gwynnda started in 2021. 
-Mr.Trash wheel collected a total of 'r mr_trash_weight' tons of trash. Professor Trash Wheel collected a total of 'r prof_trash_weight' tons of trash. Gwynnda collected a total of 'gwynnda_weight' tons of trash. In June 2022, Gwynnda collected 'r gwynnda_cig' cigarette butts.
+The combined dataset has `r n_obs` observations. Key variables include dumpter number, date of collection, amount of total litter and litter type. Mr.Trash wheel started collected trash in 2014. Professor Trash wheel started in 2017. Gwynnda started in 2021. 
+Mr.Trash wheel collected a total of `r mr_trash_weight` tons of trash. Professor Trash Wheel collected a total of `r prof_trash_weight` tons of trash. Gwynnda collected a total of `r gwynnda_weight` tons of trash. In June 2022, Gwynnda collected `r gwynnda_cig` cigarette butts.
 
 
 ## Problem 3
@@ -173,7 +173,7 @@ final_data = bakers_df|>
 write_csv(final_data, "data/final_dataset.csv")
 ```
 
-I imported these three datasets and cleaned the variables' names. Then, I went through each dataset to see whether their variables were arranged in a reasonable way and if there were any differences among them. I noticed that only the 'bakers' dataset included the full names of bakers. I extract the first name so that I can merge these dataset by name. Then, I checked the completeness and correctness across data sets by using 'anto_join'. There was one baker's name was inconsistent in bakes dataset, so I correct the name. Finally, I merged datasets by using 'left_join', and relocated some variables.
+I imported these three datasets and cleaned the variables' names. Then, I went through each dataset to see whether their variables were arranged in a reasonable way and if there were any differences among them. I noticed that only the `bakers` dataset included the full names of bakers. I extract the first name so that I can merge these dataset by name. Then, I checked the completeness and correctness across data sets by using `anto_join`. There was one baker's name was inconsistent in bakes dataset, so I correct the name. Finally, I merged datasets by using `left_join`, and relocated some variables.
 
 The final dataset includes eahc bakers in every season and episode. The basic information about each baker, like age, hometown, their signature bake, and their results, were displayed in the final dataset.
 
@@ -187,6 +187,7 @@ star_baker_table =
     col.names = c("Season", "Episode Number", "Bakers' Name", "Results")
 )
 ```
+In reviewing the Star Baker table from Seasons 5 through 10, several trends emerged. Candice Brown in season 7 secured the Star Baker title several times, indicating their strong performance in various challenges, which may suggest a predictable overall winner. Conversely, Nancy Birtwhistle's victory in Season 5 was surprising, as Richard Burr has secured the Star Baker title multiple times.
 
 ```{r}
 viewers_df =
@@ -213,4 +214,6 @@ average_season_5 = viewers_df |>
   summarise(average_viewers = mean(viewers, na.rm = TRUE))
 
 ```
+The average viewership in season 1 is `r average_season_1`
+The average viewership in season 5 is `r average_season_5`
 
