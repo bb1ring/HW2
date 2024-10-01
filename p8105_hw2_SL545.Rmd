@@ -7,7 +7,6 @@ date: "2024-09-28"
 ```{r setup, include=FALSE}
 library(tidyverse)
 library(readxl)
-library(ggridges)
 ```
 
 ## Problem 1
@@ -72,7 +71,7 @@ mr_trash =
   janitor::clean_names() |>
   mutate(sports_balls = as.integer(round(sports_balls, 0)),
          trash_wheel_name = "Mr.Trash Wheel",
-         year = as.character(year))
+         year = as.character(year)) 
 
 prof_trash = 
   read_excel("data/Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel",
@@ -92,6 +91,23 @@ gwynnda =
 ```{r}
 combined_data = 
   bind_rows(mr_trash, prof_trash, gwynnda)|>
-  arrange(dumpster, year)
+  rename(date_of_collection = date,
+         month_of_collection = month,
+         year_of_collection = year)|>
+  arrange(dumpster, year_of_collection) |>
+  mutate(glass_bottles = coalesce(glass_bottles, 0),
+         wrappers = coalesce(wrappers, 0),
+         sports_balls = coalesce(sports_balls, 0))
+```
+
+```{r}
+prof_trash_weight = prof_trash |>
+  pull(weight_tons) |>
+  sum()
+
+gwynnda_cig = gwynnda |>
+  filter(month == 6 & year == 2022) |>
+  pull(cigarette_butts) |>
+  sum()
 ```
 
