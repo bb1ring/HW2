@@ -112,15 +112,18 @@ n_obs = nrow(combined_data)
 mr_trash_weight = mr_trash |>
   pull(weight_tons) |>
   sum()
+
 prof_trash_weight = prof_trash |>
   pull(weight_tons) |>
   sum()
+
 gwynnda_weight = gwynnda |>
   pull(weight_tons) |>
   sum()
 
 gwynnda_cig = gwynnda |>
-  filter(month == 6 & year == 2022) |>
+  filter(month == "June", 
+         year == 2022) |>
   pull(cigarette_butts) |>
   sum()
 ```
@@ -146,7 +149,7 @@ bakes_df =
   janitor::clean_names() |>
   mutate(
          series = as.character(series),
-         baker = ifelse(baker == "Jo", "Jo", baker)
+         baker = str_replace_all(baker, '"', '')
   )
 
 results_df =
@@ -173,7 +176,7 @@ final_data = bakers_df|>
 write_csv(final_data, "data/final_dataset.csv")
 ```
 
-I imported these three datasets and cleaned the variables' names. Then, I went through each dataset to see whether their variables were arranged in a reasonable way and if there were any differences among them. I noticed that only the `bakers` dataset included the full names of bakers. I extract the first name so that I can merge these dataset by name. Then, I checked the completeness and correctness across data sets by using `anto_join`. There was one baker's name was inconsistent in bakes dataset, so I correct the name. Finally, I merged datasets by using `left_join`, and relocated some variables.
+I imported these three datasets and cleaned the variables' names. Then, I went through each dataset to arrange them in a reasonable way and check if there were any differences among them. I noticed that only the `bakers` dataset included the full names of bakers. I extract the first name so that I can merge these dataset by name. Then, I checked the completeness and correctness across data sets by using `anti_join`. There was one baker's name was inconsistent in bakes dataset, so I correct the name. It also showed me that only the `bakers` dataset contains information from season 9 and 10. Finally, I merged datasets by using `left_join`, and relocated some variables.
 
 The final dataset includes eahc bakers in every season and episode. The basic information about each baker, like age, hometown, their signature bake, and their results, were displayed in the final dataset.
 
@@ -214,6 +217,6 @@ average_season_5 = viewers_df |>
   summarise(average_viewers = mean(viewers, na.rm = TRUE))
 
 ```
-The average viewership in season 1 is `r average_season_1`
-The average viewership in season 5 is `r average_season_5`
+The average viewership in season 1 is `r average_season_1`.
+The average viewership in season 5 is `r average_season_5`.
 
