@@ -93,15 +93,23 @@ combined_data =
   bind_rows(mr_trash, prof_trash, gwynnda)|>
   rename(date_of_collection = date,
          month_of_collection = month,
-         year_of_collection = year)|>
-  arrange(dumpster, year_of_collection) |>
-  mutate(glass_bottles = coalesce(glass_bottles, 0),
-         wrappers = coalesce(wrappers, 0),
-         sports_balls = coalesce(sports_balls, 0))
+         year_of_collection = year,
+         total_weight_tons = weight_tons)|>
+  arrange(year_of_collection) |>
+  select(-dumpster)|>
+  relocate(trash_wheel_name)
+
+n_obs = nrow(combined_data)
 ```
 
 ```{r}
+mr_trash_weight = mr_trash |>
+  pull(weight_tons) |>
+  sum()
 prof_trash_weight = prof_trash |>
+  pull(weight_tons) |>
+  sum()
+gwynnda_weight = gwynnda |>
   pull(weight_tons) |>
   sum()
 
@@ -110,4 +118,5 @@ gwynnda_cig = gwynnda |>
   pull(cigarette_butts) |>
   sum()
 ```
-
+The combined dataset has 'r n_obs' observations. Key variables include dumpter number, date of collection, amount of total litter and litter type. Mr.Trash wheel started collected trash in 2014. Professor Trash wheel started in 2017. Gwynnda started in 2021. 
+Mr.Trash wheel collected a total of 'r mr_trash_weight' tons of trash. Professor Trash Wheel collected a total of 'r prof_trash_weight' tons of trash. Gwynnda collected a total of 'gwynnda_weight' tons of trash. In June 2022, Gwynnda collected 'r gwynnda_cig' cigarette butts.
