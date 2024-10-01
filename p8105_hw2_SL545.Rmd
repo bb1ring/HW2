@@ -8,6 +8,7 @@ date: "2024-09-28"
 library(tidyverse)
 library(readxl)
 library(stringr)
+library(readr)
 ```
 
 ## Problem 1
@@ -143,7 +144,10 @@ bakes_df =
   read_csv("data/gbb_datasets/bakes.csv", 
            na = c("NA", "", ".")) |>
   janitor::clean_names() |>
-  mutate(series = as.character(series))
+  mutate(
+         series = as.character(series),
+         baker = ifelse(baker == "Jo", "Jo", baker)
+  )
 
 results_df =
   read_csv("data/gbb_datasets/results.csv",
@@ -151,7 +155,41 @@ results_df =
            na = c("NA", "", ".")) |>
   janitor::clean_names()|>
   mutate(series = as.character(series))
+```
 
+```{r}
+anti_join(bakers_df, results_df, by = "series")
+anti_join(bakers_df, bakes_df, by = "baker")
+anti_join(bakes_df, results_df, by = "series")
+```
+
+
+```{r}
+all_info = bakers_df|>
+  left_join(bakes_df, by = c("baker", "series"), relationship = "many-to-many") |>
+  left_join(results_df, by = c("baker", "series", "episode"), relationship = "many-to-many")
+```
+
+```{r}
+final_data = all_info|>
+  select(-baker) |>
+  relocate(series, episode, baker_name)
+
+write_csv(final_data, "data/final_dataset.csv")
+```
+
+```{r}
+star_baker_table =
+  filter(final_data, series >= 5) |>
+  select(series, episode, baker_name, result) |>
+  arrange(series, episode) |>
+  knitr::kable(
+    caption = "Star Bakers and Winners for Seasons 5 to 10",
+    col.names = c("Season", "Episode Number", "Bakers' Name", "Results")
+)
+```
+
+```{r}
 viewers_df =
   read_csv("data/gbb_datasets/viewers.csv", 
            na = c("NA", "", ".")) |>
@@ -164,32 +202,9 @@ viewers_df =
   mutate(series = str_remove(series, "series_"))|>
   relocate(series)|>
   arrange(series)
-```
 
-```{r}
-all_info = bakers_df|>
-  left_join(bakes_df, by = c("baker", "series"), relationship = "many-to-many") |>
-  left_join(viewers_df, by = c("series", "episode"), relationship = "many-to-many") |>
-  left_join(results_df, by = c("baker", "series", "episode"), relationship = "many-to-many")
-```
-
-```{r}
-final_data = all_info|>
-  select(-baker) |>
-  relocate(series, episode, baker_name)
-
-write_csv(final_data, "HW2/final_dataset.csv")
+# Display the first 10 rows
+head(viewers_df, 10)
 
 ```
-```{r}
-star_bakers <- final_data %>%
-  filter(Season >= 5 & Season <= 10) %>%
-  group_by(Episode, Season) %>%
-  summarise(StarBaker = first(BakerName[Result == "Star Baker"]))
-
-# Display the table
-print(star_bakers)
-
-```
-
 
