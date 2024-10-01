@@ -163,20 +163,19 @@ anti_join(bakers_df, bakes_df, by = "baker")
 anti_join(bakes_df, results_df, by = "series")
 ```
 
-
 ```{r}
-all_info = bakers_df|>
+final_data = bakers_df|>
   left_join(bakes_df, by = c("baker", "series"), relationship = "many-to-many") |>
-  left_join(results_df, by = c("baker", "series", "episode"), relationship = "many-to-many")
-```
-
-```{r}
-final_data = all_info|>
+  left_join(results_df, by = c("baker", "series", "episode"), relationship = "many-to-many")|>
   select(-baker) |>
   relocate(series, episode, baker_name)
 
 write_csv(final_data, "data/final_dataset.csv")
 ```
+
+I imported these three datasets and cleaned the variables' names. Then, I went through each dataset to see whether their variables were arranged in a reasonable way and if there were any differences among them. I noticed that only the 'bakers' dataset included the full names of bakers. I extract the first name so that I can merge these dataset by name. Then, I checked the completeness and correctness across data sets by using 'anto_join'. There was one baker's name was inconsistent in bakes dataset, so I correct the name. Finally, I merged datasets by using 'left_join', and relocated some variables.
+
+The final dataset includes eahc bakers in every season and episode. The basic information about each baker, like age, hometown, their signature bake, and their results, were displayed in the final dataset.
 
 ```{r}
 star_baker_table =
@@ -203,8 +202,15 @@ viewers_df =
   relocate(series)|>
   arrange(series)
 
-# Display the first 10 rows
 head(viewers_df, 10)
+
+average_season_1 = viewers_df |>
+  filter(series == "1") |>
+  summarise(average_viewers = mean(viewers, na.rm = TRUE))
+
+average_season_5 = viewers_df |>
+  filter(series == "5") |>
+  summarise(average_viewers = mean(viewers, na.rm = TRUE))
 
 ```
 
