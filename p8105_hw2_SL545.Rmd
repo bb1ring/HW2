@@ -182,13 +182,14 @@ The final dataset includes eahc bakers in every season and episode. The basic in
 
 ```{r}
 star_baker_table =
-  filter(final_data, series >= 5) |>
+  filter(final_data, series >= 5, result %in% c("STAR BAKER", "WINNER")) |>
   select(series, episode, baker_name, result) |>
   arrange(series, episode) |>
   knitr::kable(
     caption = "Star Bakers and Winners for Seasons 5 to 10",
     col.names = c("Season", "Episode Number", "Bakers' Name", "Results")
 )
+print(star_baker_table)
 ```
 In reviewing the Star Baker table from Seasons 5 through 10, several trends emerged. Candice Brown in season 7 secured the Star Baker title several times, indicating their strong performance in various challenges, which may suggest a predictable overall winner. Conversely, Nancy Birtwhistle's victory in Season 5 was surprising, as Richard Burr has secured the Star Baker title multiple times.
 
